@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sidecar-container-demo
+spec:
+  containers:
+  - image: debian
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo echo $(date) >> /var/log/index.html; sleep 5;done"]
+    name: sidecar-container
+    resources: {}
+    volumeMounts:
+    - name: html-logs
+      mountPath: /var/log
+  - image: nginx
+    name: main-container
+    resources: {}
+    ports:
+      - containerPort: 80
+    volumeMounts:
+    - name: html-logs
+      mountPath: /usr/share/nginx/html
+  dnsPolicy: Default
+  volumes:
+  - name: html-logs
+    emptyDir: {}
